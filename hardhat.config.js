@@ -2,6 +2,7 @@ require("@nomiclabs/hardhat-waffle")
 require("@nomiclabs/hardhat-etherscan")
 require("hardhat-contract-sizer")
 require('@typechain/hardhat')
+require('hardhat-deploy')
 
 const {
   BSC_URL,
@@ -112,5 +113,10 @@ module.exports = {
   typechain: {
     outDir: "typechain",
     target: "ethers-v5",
+  },
+  namedAccounts: {
+    deployer: {
+      default: 0, // here this will by default take the first account as deployer
+    },
   },
 }

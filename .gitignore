@@ -14,7 +14,7 @@ data/contractList
 flattened
 distribution-data*.json
 **/.DS_Store
-
+yarn.lock
 #Hardhat files
 cache
 artifacts
