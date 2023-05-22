@@ -6,25 +6,28 @@ module.exports = async ({
     getUnnamedAccounts, }) => {
     const { deploy } = deployments;
     const { deployer } = await getNamedAccounts();
-
-    const gmx = await deploy('GMX', {
-        from: deployer
-    });
+    const gmx = await deployContract(deploy, deployer, "GMX", []);
     const nativeTokenSupply = expandDecimals(10 * 1000, 18)
     const nativeToken = { address: "" };
-    nativeToken.address = (await deploy('FaucetToken', { from: deployer, args: ["WTEH", "WTEH", 18, expandDecimals(1000, 18)] })).address
+    //nativeToken.address = (await deploy('FaucetToken', { from: deployer, args: ["WTEH", "WTEH", 18, expandDecimals(1000, 18)] })).address
+    nativeToken.address = (await deployContract(deploy, deployer, "FaucetToken", ["WTEH", "WTEH", 18, expandDecimals(1000, 18)])).address;
     const gmtSupply = expandDecimals(401 * 1000, 18)
-    const gmt = await deploy("GMT", { from: deployer, args: [gmtSupply] })
+    const gmt = await deployContract(deploy, deployer, "GMT", [gmtSupply]);
+    const reader = await deployContract(deploy, deployer, "Reader", []);
     //deploy tokens
-    const btc = await deploy("FaucetToken", { from: deployer, args: ["Bitcoin", "BTC", 18, expandDecimals(1000, 18)] })
-    const usdc = await deploy("FaucetToken", { from: deployer, args: ["USDC Coin", "USDC", 18, expandDecimals(1000, 18)] })
-    const usdt = await deploy("FaucetToken", { from: deployer, args: ["Tether", "USDT", 18, expandDecimals(1000, 18)] })
+    const btc = await deployContract(deploy, deployer, "FaucetToken", ["Bitcoin", "BTC", 18, expandDecimals(1000, 18)])
+    const usdc = await deployContract(deploy, deployer, "FaucetToken", ["USDC Coin", "USDC", 18, expandDecimals(1000, 18)])
+    const usdt = await deployContract(deploy, deployer, "FaucetToken", ["Tether", "USDT", 18, expandDecimals(1000, 18)])
     //const vault = await deploy("Vault", { from: deployer });
     const vault = await deployContract(deploy, deployer, "Vault", []);
     //const usdg = await deploy("USDG", { from: deployer, args: [vault.address] });
     const usdg = await deployContract(deploy, deployer, "USDG", [vault.address]);
-    const router = await deploy("Router", { from: deployer, args: [vault.address, usdg.address, nativeToken.address] });
+    const router = await deployContract(deploy, deployer, "Router", [vault.address, usdg.address, nativeToken.address]);
     const vaultPriceFeed = await deployContract(deploy, deployer, "VaultPriceFeed", []);
+    const orderBook = await deployContract(deploy, deployer, "OrderBook", []);
+    //TODO: add orderBook.initialize
+    const orderBookReader = await deployContract(deploy, deployer, "OrderBookReader", []);
+    //TODO: add position router and position manager
     await sendTxn(vaultPriceFeed.setMaxStrictPriceDeviation(expandDecimals(1, 28)), "vaultPriceFeed.setMaxStrictPriceDeviation") // 0.05 USD
     await sendTxn(vaultPriceFeed.setPriceSampleSpace(1), "vaultPriceFeed.setPriceSampleSpace")
     await sendTxn(vaultPriceFeed.setIsAmmEnabled(false), "vaultPriceFeed.setIsAmmEnabled")
@@ -69,6 +72,7 @@ module.exports = async ({
     await sendTxn(vaultErrorController.setErrors(vault.address, errors), "vaultErrorController.setErrors")
     const vaultUtils = await deploy("VaultUtils", { from: deployer, args: [vault.address] });
     await sendTxn(vault.setVaultUtils(vaultUtils.address), "vault.setVaultUtils")
+
 }
 
 async function deployContract(deploy, deployer, contractName, args) {
