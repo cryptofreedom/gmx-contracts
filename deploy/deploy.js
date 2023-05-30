@@ -16,6 +16,7 @@ module.exports = async ({
     const reader = await deployContract(deploy, deployer, "Reader", []);
     //deploy tokens
     const btc = await deployContract(deploy, deployer, "FaucetToken", ["Bitcoin", "BTC", 18, expandDecimals(1000, 18)])
+    const weth = await deployContract(deploy, deployer, "FaucetToken", ["Wrapped ETH", "WETH", 18, expandDecimals(1000, 18)])
     const usdc = await deployContract(deploy, deployer, "FaucetToken", ["USDC Coin", "USDC", 18, expandDecimals(1000, 18)])
     const usdt = await deployContract(deploy, deployer, "FaucetToken", ["Tether", "USDT", 18, expandDecimals(1000, 18)])
     //const vault = await deploy("Vault", { from: deployer });
