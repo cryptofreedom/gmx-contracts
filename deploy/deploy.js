@@ -37,7 +37,7 @@ module.exports = async ({
     //const glpManager = await deploy("GLPManager", { from: deployer, args: [vault.address, usdg.address, glp.address, glp.address, 15 * 60] });
     const glpManager = await deployContract(deploy, deployer, "GlpManager", [vault.address, usdg.address, glp.address, glp.address, 15 * 60]);
     await sendTxn(glpManager.setInPrivateMode(true), "glpManager.setInPrivateMode")
-
+    const VaultReader = await deployContract(deploy, deployer, "VaultReader", []);
     await sendTxn(glp.setMinter(glpManager.address, true), "glp.setMinter")
     await sendTxn(usdg.addVault(glpManager.address), "usdg.addVault(glpManager)")
 
