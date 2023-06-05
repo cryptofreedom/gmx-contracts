@@ -48,6 +48,7 @@ module.exports = {
       timeout: 120000
     },
     hardhat: {
+      chainId: 1337,
       allowUnlimitedContractSize: true
     },
     bsc: {
